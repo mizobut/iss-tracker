@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>네트워크 핵심 상세 학습 — 1일차 6~7교시</title>
+<style>
+  :root{
+    --accent:#4f46e5;
+    --accent2:#06b6d4;
+    --text:#1e293b;
+    --muted:#64748b;
+    --bg:#f8fafc;
+    --card:#ffffff;
+    --border:#e2e8f0;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    font-family:'Segoe UI','Pretendard','Apple SD Gothic Neo',sans-serif;
+    background:var(--bg);
+    color:var(--text);
+    line-height:1.7;
+  }
+  a{color:var(--accent);}
+  .topbar{
+    position:sticky;
+    top:0;
+    z-index:10;
+    background:rgba(255,255,255,.85);
+    backdrop-filter:blur(8px);
+    border-bottom:1px solid var(--border);
+    padding:14px 24px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+  }
+  .topbar .brand{
+    font-weight:800;
+    color:var(--accent);
+    text-decoration:none;
+    font-size:15px;
+  }
+  .topbar nav a{
+    margin-left:18px;
+    font-size:14px;
+    color:var(--muted);
+    text-decoration:none;
+    font-weight:600;
+  }
+  .topbar nav a:hover{color:var(--accent);}
+  header.hero{
+    background:linear-gradient(135deg,#4f46e5,#06b6d4);
+    color:#fff;
+    padding:64px 24px 56px;
+    text-align:center;
+  }
+  header.hero .badge{
+    display:inline-block;
+    padding:6px 16px;
+    border-radius:999px;
+    background:rgba(255,255,255,.18);
+    font-size:13px;
+    margin-bottom:16px;
+  }
+  header.hero h1{
+    margin:0 0 10px;
+    font-size:clamp(26px,4.5vw,38px);
+  }
+  header.hero p{
+    margin:0 auto;
+    max-width:600px;
+    color:rgba(255,255,255,.9);
+    font-size:15px;
+  }
+  main{
+    max-width:880px;
+    margin:0 auto;
+    padding:48px 24px 100px;
+  }
+  section{
+    margin-bottom:64px;
+  }
+  .section-head{
+    display:flex;
+    align-items:center;
+    gap:14px;
+    margin-bottom:24px;
+  }
+  .section-head .chip{
+    background:var(--accent);
+    color:#fff;
+    font-weight:800;
+    font-size:13px;
+    padding:6px 12px;
+    border-radius:8px;
+    white-space:nowrap;
+  }
+  .section-head h2{
+    margin:0;
+    font-size:24px;
+  }
+  .card{
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:16px;
+    padding:26px 28px;
+    margin-bottom:20px;
+    box-shadow:0 4px 16px rgba(15,23,42,.04);
+  }
+  .card h3{
+    margin-top:0;
+    font-size:17px;
+    color:var(--accent);
+    display:flex;
+    align-items:center;
+    gap:8px;
+  }
+  .card p, .card li{
+    color:#334155;
+    font-size:15px;
+  }
+  .card ul{
+    padding-left:20px;
+    margin:10px 0 0;
+  }
+  .layers{
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+  }
+  .layer-row{
+    display:grid;
+    grid-template-columns:170px 1fr;
+    gap:16px;
+    align-items:center;
+    background:#f1f5f9;
+    border-radius:12px;
+    padding:14px 18px;
+    border-left:5px solid var(--accent2);
+  }
+  .layer-row.l1{border-color:#818cf8;}
+  .layer-row.l2{border-color:#38bdf8;}
+  .layer-row.l3{border-color:#22d3ee;}
+  .layer-row.l4{border-color:#2dd4bf;}
+  .layer-row strong{font-size:14.5px;}
+  .layer-row span{font-size:13.5px;color:var(--muted);}
+  table{
+    width:100%;
+    border-collapse:collapse;
+    font-size:14.5px;
+    margin-top:8px;
+  }
+  th,td{
+    text-align:left;
+    padding:10px 12px;
+    border-bottom:1px solid var(--border);
+  }
+  th{color:var(--muted);font-weight:700;font-size:13px;text-transform:uppercase;letter-spacing:.4px;}
+  code, .code-block code{font-family:Consolas,'D2Coding',monospace;}
+  code{
+    background:#eef2ff;
+    color:#4338ca;
+    padding:2px 6px;
+    border-radius:6px;
+    font-size:13.5px;
+  }
+  .code-block{
+    background:#0f172a;
+    color:#e2e8f0;
+    border-radius:12px;
+    padding:20px 22px;
+    overflow-x:auto;
+    font-size:13.5px;
+    line-height:1.65;
+    margin-top:10px;
+    white-space:pre;
+  }
+  .code-block .c1{color:#94a3b8;}
+  .code-block .kw{color:#67e8f9;}
+  .code-block .str{color:#a5b4fc;}
+  .http-msg{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:20px;
+  }
+  .http-msg .box h4{
+    margin:0 0 8px;
+    font-size:13.5px;
+    color:var(--muted);
+    text-transform:uppercase;
+    letter-spacing:.5px;
+  }
+  @media (max-width:680px){
+    .http-msg{grid-template-columns:1fr;}
+    .layer-row{grid-template-columns:1fr;}
+  }
+  .steps{
+    counter-reset:step;
+    list-style:none;
+    padding:0;
+    margin:0;
+  }
+  .steps li{
+    counter-increment:step;
+    position:relative;
+    padding:6px 0 6px 40px;
+    font-size:15px;
+    color:#334155;
+  }
+  .steps li::before{
+    content:counter(step);
+    position:absolute;
+    left:0;
+    top:4px;
+    width:26px;
+    height:26px;
+    border-radius:50%;
+    background:var(--accent);
+    color:#fff;
+    font-size:13px;
+    font-weight:700;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+  .status-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
+    gap:12px;
+    margin-top:8px;
+  }
+  .status{
+    padding:12px 14px;
+    border-radius:10px;
+    font-size:13.5px;
+  }
+  .status b{display:block;font-size:16px;margin-bottom:2px;}
+  .status.s2{background:#ecfdf5;color:#047857;}
+  .status.s3{background:#eff6ff;color:#1d4ed8;}
+  .status.s4{background:#fffbeb;color:#b45309;}
+  .status.s5{background:#fef2f2;color:#b91c1c;}
+  footer{
+    text-align:center;
+    padding:30px;
+    color:var(--muted);
+    font-size:13px;
+    border-top:1px solid var(--border);
+  }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <a class="brand" href="index.html">◂ 네트워크 핵심</a>
+  <nav>
+    <a href="#layer">TCP/IP 4계층</a>
+    <a href="#addr">IP·DNS·Port</a>
+    <a href="#https">HTTP/HTTPS</a>
+    <a href="#msg">요청/응답</a>
+    <a href="#practice">웹서버 실습</a>
+  </nav>
+</div>
+
+<header class="hero">
+  <span class="badge">1일차 · 6~7교시 · 네트워크 핵심</span>
+  <h1>웹은 어떻게 연결되는가</h1>
+  <p>TCP/IP 4계층과 통신 흐름부터 IP, DNS, Port, HTTP/HTTPS, 그리고 직접 실습하는 웹서버까지 한 번에 정리합니다.</p>
+</header>
+
+<main>
+
+  <section id="layer">
+    <div class="section-head">
+      <span class="chip">6교시</span>
+      <h2>TCP/IP 4계층과 통신 흐름</h2>
+    </div>
+
+    <div class="card">
+      <h3>🧱 계층으로 나누는 이유</h3>
+      <p>
+        네트워크 통신은 매우 복잡한 과정입니다. 이를 역할별로 나누어 각 계층이 자기 할 일만 책임지게 하면,
+        문제가 생겼을 때 원인을 빠르게 좁혀갈 수 있고 계층별로 기술을 독립적으로 교체할 수도 있습니다.
+      </p>
+    </div>
+
+    <div class="card">
+      <h3>🪜 TCP/IP 4계층 구조</h3>
+      <div class="layers">
+        <div class="layer-row l1">
+          <strong>4. 애플리케이션 계층</strong>
+          <span>사람이 사용하는 서비스 규약 — HTTP, HTTPS, DNS, FTP, SMTP 등</span>
+        </div>
+        <div class="layer-row l2">
+          <strong>3. 전송 계층</strong>
+          <span>데이터를 어떤 방식으로, 몇 번 포트로 주고받을지 결정 — TCP(신뢰성), UDP(속도)</span>
+        </div>
+        <div class="layer-row l3">
+          <strong>2. 인터넷 계층</strong>
+          <span>출발지에서 목적지까지 경로를 찾아 전달 — IP 주소, 라우팅</span>
+        </div>
+        <div class="layer-row l4">
+          <strong>1. 네트워크 인터페이스 계층</strong>
+          <span>실제 물리적인 전송 — 이더넷 케이블, Wi-Fi, MAC 주소</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>🔄 통신 흐름 예시 — 브라우저 주소창에 URL을 입력하면?</h3>
+      <ol class="steps">
+        <li>브라우저가 URL에서 도메인을 추출하고, DNS에 질의하여 IP 주소를 얻습니다.</li>
+        <li>전송 계층에서 TCP 연결을 맺기 위해 3-way handshake를 수행합니다.</li>
+        <li>인터넷 계층이 IP 주소를 바탕으로 여러 라우터를 거쳐 목적지까지 경로를 찾아갑니다.</li>
+        <li>애플리케이션 계층에서 HTTP 요청 메시지를 만들어 서버로 전송합니다.</li>
+        <li>서버가 응답을 만들어 같은 경로를 거쳐 되돌려 보내고, 브라우저가 화면을 렌더링합니다.</li>
+      </ol>
+    </div>
+  </section>
+
+  <section id="addr">
+    <div class="section-head">
+      <span class="chip">6교시</span>
+      <h2>IP, DNS, Port 개념</h2>
+    </div>
+
+    <div class="card">
+      <h3>🌐 IP (Internet Protocol) 주소</h3>
+      <p>네트워크에 연결된 장치를 식별하는 고유한 주소입니다.</p>
+      <table>
+        <tr><th>구분</th><th>형식</th><th>예시</th></tr>
+        <tr><td>IPv4</td><td>8비트 × 4자리 (0~255)</td><td><code>192.168.0.1</code></td></tr>
+        <tr><td>IPv6</td><td>16비트 × 8자리 (16진수)</td><td><code>2001:0db8::1</code></td></tr>
+      </table>
+    </div>
+
+    <div class="card">
+      <h3>📖 DNS (Domain Name System)</h3>
+      <p>
+        사람이 외우기 쉬운 도메인 이름(<code>www.example.com</code>)을 실제 통신에 필요한
+        IP 주소로 변환해주는 &ldquo;인터넷의 전화번호부&rdquo;입니다.
+      </p>
+      <div class="code-block"><span class="c1">// 개념적인 흐름</span>
+www.example.com  <span class="kw">--DNS 조회-->  </span><span class="str">93.184.216.34</span></div>
+    </div>
+
+    <div class="card">
+      <h3>🔌 Port (포트)</h3>
+      <p>
+        하나의 IP 주소를 가진 컴퓨터 안에서 어떤 프로그램(서비스)과 통신할지 구분하는 번호입니다.
+        IP가 &ldquo;건물 주소&rdquo;라면 Port는 &ldquo;몇 호실&rdquo;인지를 나타냅니다.
+      </p>
+      <table>
+        <tr><th>포트 번호</th><th>서비스</th></tr>
+        <tr><td>80</td><td>HTTP</td></tr>
+        <tr><td>443</td><td>HTTPS</td></tr>
+        <tr><td>22</td><td>SSH</td></tr>
+        <tr><td>3306</td><td>MySQL</td></tr>
+      </table>
+    </div>
+  </section>
+
+  <section id="https">
+    <div class="section-head">
+      <span class="chip">6교시</span>
+      <h2>HTTP / HTTPS 개념</h2>
+    </div>
+
+    <div class="card">
+      <h3>📨 HTTP (HyperText Transfer Protocol)</h3>
+      <p>웹 브라우저와 서버가 문서(HTML, JSON, 이미지 등)를 주고받기 위한 약속(프로토콜)입니다.</p>
+    </div>
+
+    <div class="card">
+      <h3>🔒 HTTPS — HTTP + 암호화</h3>
+      <p>
+        HTTP 통신 내용을 TLS/SSL로 암호화하여 중간에서 누군가 엿보거나 위조할 수 없도록 만든 버전입니다.
+        기본 포트가 <code>80</code> → <code>443</code>으로 바뀌고, 주소창에 자물쇠 아이콘이 표시됩니다.
+      </p>
+    </div>
+  </section>
+
+  <section id="msg">
+    <div class="section-head">
+      <span class="chip">7교시</span>
+      <h2>HTTP 요청 / 응답 구조</h2>
+    </div>
+
+    <div class="card">
+      <h3>📤 요청(Request)과 📥 응답(Response)</h3>
+      <p>HTTP 통신은 언제나 <b>클라이언트의 요청</b>으로 시작해서 <b>서버의 응답</b>으로 끝나는 1:1 대화 구조입니다.</p>
+      <div class="http-msg">
+        <div class="box">
+          <h4>Request</h4>
+          <div class="code-block"><span class="kw">GET</span> /course.html <span class="c1">HTTP/1.1</span>
+Host: localhost:8080
+User-Agent: Mozilla/5.0
+Accept: text/html</div>
+        </div>
+        <div class="box">
+          <h4>Response</h4>
+          <div class="code-block"><span class="c1">HTTP/1.1</span> <span class="kw">200</span> <span class="str">OK</span>
+Content-Type: text/html
+Content-Length: 512
+
+<span class="c1">&lt;html&gt;...&lt;/html&gt;</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>🧩 자주 쓰는 HTTP 메서드</h3>
+      <table>
+        <tr><th>메서드</th><th>의미</th></tr>
+        <tr><td><code>GET</code></td><td>리소스 조회</td></tr>
+        <tr><td><code>POST</code></td><td>리소스 생성</td></tr>
+        <tr><td><code>PUT</code></td><td>리소스 전체 수정</td></tr>
+        <tr><td><code>DELETE</code></td><td>리소스 삭제</td></tr>
+      </table>
+    </div>
+
+    <div class="card">
+      <h3>🚦 상태 코드(Status Code)</h3>
+      <div class="status-grid">
+        <div class="status s2"><b>2xx</b>성공 (200 OK)</div>
+        <div class="status s3"><b>3xx</b>리다이렉션 (301, 302)</div>
+        <div class="status s4"><b>4xx</b>클라이언트 오류 (404 Not Found)</div>
+        <div class="status s5"><b>5xx</b>서버 오류 (500 Internal Error)</div>
+      </div>
+    </div>
+  </section>
+
+  <section id="practice">
+    <div class="section-head">
+      <span class="chip">7교시 · 실습</span>
+      <h2>간단한 웹서버 작성 및 테스트</h2>
+    </div>
+
+    <div class="card">
+      <h3>🛠️ Node.js로 만드는 최소 웹서버</h3>
+      <p>이 폴더의 <code>index.html</code>, <code>course.html</code>을 서비스하는 서버를 직접 작성해봅니다.</p>
+      <div class="code-block"><span class="c1">// server.js</span>
+<span class="kw">const</span> http = require(<span class="str">'http'</span>);
+<span class="kw">const</span> fs = require(<span class="str">'fs'</span>);
+<span class="kw">const</span> path = require(<span class="str">'path'</span>);
+
+<span class="kw">const</span> server = http.createServer((req, res) => {
+  <span class="kw">const</span> file = req.url === <span class="str">'/'</span> ? <span class="str">'index.html'</span> : req.url.slice(1);
+  <span class="kw">const</span> filePath = path.join(__dirname, file);
+
+  fs.readFile(filePath, (err, data) => {
+    <span class="kw">if</span> (err) {
+      res.writeHead(404, { <span class="str">'Content-Type'</span>: <span class="str">'text/plain'</span> });
+      res.end(<span class="str">'404 Not Found'</span>);
+      <span class="kw">return</span>;
+    }
+    res.writeHead(200, { <span class="str">'Content-Type'</span>: <span class="str">'text/html'</span> });
+    res.end(data);
+  });
+});
+
+server.listen(8080, () => {
+  console.log(<span class="str">'서버 실행: http://localhost:8080'</span>);
+});</div>
+    </div>
+
+    <div class="card">
+      <h3>▶️ 실행 및 테스트 방법</h3>
+      <ol class="steps">
+        <li>터미널에서 <code>node server.js</code>로 서버를 실행합니다.</li>
+        <li>브라우저에서 <code>http://localhost:8080</code> 접속 → index.html 확인.</li>
+        <li><code>http://localhost:8080/course.html</code>로 접속하여 다른 페이지도 확인.</li>
+        <li>개발자 도구(F12) → Network 탭에서 실제 요청/응답 헤더와 상태 코드를 직접 관찰해봅니다.</li>
+        <li>존재하지 않는 경로(예: <code>/none.html</code>)에 접속해 404 응답을 확인합니다.</li>
+      </ol>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  ITCS 기초지식부터 풀스택까지 · 제로에서 시작하는 바이브코딩 · <a href="index.html">← 개요로 돌아가기</a>
+</footer>
+
+</body>
+</html>
